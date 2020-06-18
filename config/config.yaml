@@ -12,10 +12,10 @@ selfservice:
               hook: verify
   
     verify:
-      return_to: http://127.0.0.1:4455/
+      return_to: http://127.0.0.1:9080/
   
     logout:
-      redirect_to: http://127.0.0.1:4455/auth/login
+      redirect_to: http://127.0.0.1:9080
   
     login:
       request_lifespan: 10m
@@ -31,20 +31,19 @@ selfservice:
               hook: verify
 
 urls:
-    # login_ui: http://127.0.0.1:4455/auth/login
-    # registration_ui: http://127.0.0.1:4455/auth/registration
-    # error_ui: http://127.0.0.1:4455/error
-    # settings_ui: http://127.0.0.1:4455/settings
-    # verify_ui: http://127.0.0.1:4455/verify
+    login_ui: http://127.0.0.1:9080/auth/login
+    registration_ui: http://127.0.0.1:9080/auth/registration
+    error_ui: http://127.0.0.1:9080/error
+    settings_ui: http://127.0.0.1:9080/settings
+    verify_ui: http://127.0.0.1:9080/verify
 
-    # # These are undefined because not available in this demo
-    # mfa_ui: http://127.0.0.1:4455/
     self:
-        public: http://127.0.0.1:4433/.ory/kratos/public/
+        public: http://127.0.0.1:9080/.ory/kratos/public/
+        # public: http://127.0.0.1:4433/
         admin: http://kratos:4434/
-    # default_return_to: http://127.0.0.1:4455/
-    # whitelisted_return_to_urls:
-    #     - http://127.0.0.1:4455
+    default_return_to: http://127.0.0.1:9080
+    whitelisted_return_to_urls:
+        - http://127.0.0.1:9080
 
 identity:
     traits:

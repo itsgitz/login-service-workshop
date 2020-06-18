@@ -17,7 +17,6 @@ services:
 
     kratos:
         depends_on: 
-            - postgresql-db
             - kratos-migrate
         image: oryd/kratos:latest
         container_name: app-kratos
