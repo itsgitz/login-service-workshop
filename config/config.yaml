@@ -39,7 +39,6 @@ urls:
 
     self:
         public: http://127.0.0.1:9080/.ory/kratos/public/
-        # public: http://127.0.0.1:4433/
         admin: http://kratos:4434/
     default_return_to: http://127.0.0.1:9080
     whitelisted_return_to_urls:
