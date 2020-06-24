@@ -7,7 +7,7 @@ This repostory is contains Go source code for implementing Login System using OR
 
 # Usage
 
-A. Self-Service Browser
+### A. Self-Service Browser
 1. Run docker-compose for running ORY Kratos Service as User Management Service
 ```shell
 $ make run
@@ -20,7 +20,7 @@ $ go run service/kratos_self-service_browser/main.go
 
 3. Access http://127.0.0.1:9080/login for landing on the login page, or http://127.0.0.1:9080/registeration for user registration (create a new user / sign up).
 
-B. API Client
+### B. API Client
 
 Ory Kratos is not intended for API Client. According to their official website:
 
