@@ -1,0 +1,51 @@
+{
+    "id": "da8c2605-b4e9-4296-a5b9-3f6989cb7a00",
+    "expires_at": "2020-06-17T04:55:04.624588Z",
+    "issued_at": "2020-06-17T04:45:04.624588Z",
+    "request_url": "http://127.0.0.1:4433/self-service/browser/flows/registration",
+    "methods": {
+        "oidc": {
+            "method": "oidc",
+            "config": {
+                "action": "http://127.0.0.1:9080/.ory/kratos/public/self-service/browser/flows/strategies/oidc/auth/da8c2605-b4e9-4296-a5b9-3f6989cb7a00",
+                "method": "POST",
+                "fields": [
+                    {
+                        "name": "csrf_token",
+                        "type": "hidden",
+                        "required": true,
+                        "value": "6sTnfX/UeWT38wcjLLtgjwTRnjAy+hBX7bpQmgGZ7XmT3Co5H8KxPhQ6jlA4J6hWJZHedI+szQ+u2vOT+gHSQQ=="
+                    }
+                ]
+            }
+        },
+        "password": {
+            "method": "password",
+            "config": {
+                "action": "http://127.0.0.1:9080/.ory/kratos/public/self-service/browser/flows/registration/strategies/password?request=da8c2605-b4e9-4296-a5b9-3f6989cb7a00",
+                "method": "POST",
+                "fields": [
+                    {
+                        "name": "csrf_token",
+                        "type": "hidden",
+                        "required": true,
+                        "value": "6sTnfX/UeWT38wcjLLtgjwTRnjAy+hBX7bpQmgGZ7XmT3Co5H8KxPhQ6jlA4J6hWJZHedI+szQ+u2vOT+gHSQQ=="
+                    },
+                    {
+                        "name": "password",
+                        "type": "password",
+                        "required": true
+                    },
+                    {
+                        "name": "traits.email",
+                        "type": "email"
+                    },
+                    {
+                        "name": "traits.username",
+                        "type": "text"
+                    }
+                ]
+            }
+        }
+    }
+}
