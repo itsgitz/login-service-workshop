@@ -29,3 +29,6 @@ Ory Kratos is not intended for API Client. According to their official website:
 
 I've tried to create API login system using Go HTTP Client, but this is still failed. ORY Kratos need cookies for sessions. CSRF Token is always invalid even all headers and cookies has copied into Go HTTP client that I've created, and login process is still failed.
 
+# Contributor
+
+Anggit M Ginanjar, Software Developer
