@@ -1,5 +1,20 @@
 version: '3.7'
 services:
+    login-provider:
+        depends_on:
+            - kratos
+        container_name: app-login-provider
+        build: ./service/kratos_self-service_browser
+        restart: on-failure
+        environment: 
+            - ADMIN_API=${ADMIN_API}
+            - PUBLIC_API=${PUBLIC_API}
+            - CLIENT_API=${CLIENT_API}
+            - SELF_PUBLIC_API_PATH=${SELF_PUBLIC_API_PATH}
+        ports:
+            - '9080:9080'
+        networks: 
+            - go-network
     kratos-migrate:
         depends_on: 
             - postgresql-db
