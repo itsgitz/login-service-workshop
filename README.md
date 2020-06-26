@@ -13,12 +13,7 @@ This repostory is contains Go source code for implementing Login System using OR
 $ make run
 ```
 
-2. Run go source code for Login Provider service
-```shell
-$ go run service/kratos_self-service_browser/main.go
-```
-
-3. Access http://127.0.0.1:9080/login for landing on the login page, or http://127.0.0.1:9080/registeration for user registration (create a new user / sign up).
+2. Access http://127.0.0.1:9080/login for landing on the login page, or http://127.0.0.1:9080/registeration for user registration (create a new user / sign up).
 
 ### B. API Client
 
