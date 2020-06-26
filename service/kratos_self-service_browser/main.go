@@ -17,10 +17,10 @@ import (
 	"github.com/ory/kratos-client-go/client/public"
 )
 
-// kratos "github.com/ory/kratos-client-go/client"
-
-var adminKratosClient *kratos.OryKratos
-var publicKratosClient *kratos.OryKratos
+var (
+	adminKratosClient  *kratos.OryKratos
+	publicKratosClient *kratos.OryKratos
+)
 
 func init() {
 	adminHost, err := url.Parse(utils.AdminAPI)
@@ -60,7 +60,8 @@ func main() {
 
 	// Main page / home page, say hello!
 	r.GET("/", func(c *gin.Context) {
-		tpl := template.Must(template.ParseFiles("service/kratos_self-service_browser/views/main.html"))
+		log.Println("ADMIN_API:", utils.AdminAPI)
+		tpl := template.Must(template.ParseFiles("views/main.html"))
 		tpl.Execute(c.Writer, nil)
 	})
 
@@ -100,7 +101,7 @@ func main() {
 
 		config := resp.GetPayload().Methods["password"].Config
 
-		tpl := template.Must(template.ParseFiles("service/kratos_self-service_browser/views/login.html"))
+		tpl := template.Must(template.ParseFiles("views/login.html"))
 		tpl.Execute(c.Writer, config)
 	})
 
@@ -117,7 +118,7 @@ func main() {
 		config := resp.GetPayload().Methods["password"].Config
 
 		// define template
-		tpl := template.Must(template.ParseFiles("service/kratos_self-service_browser/views/registration.html"))
+		tpl := template.Must(template.ParseFiles("views/registration.html"))
 		tpl.Execute(c.Writer, config)
 	})
 
@@ -151,20 +152,6 @@ func main() {
 		return
 	})
 
-	r.GET("/session/proxy", func(c *gin.Context) {
-		director := func(req *http.Request) {
-			req.URL.Scheme = "http"
-			req.URL.Host = "127.0.0.1:4433"
-			req.URL.Path = "/sessions/whoami"
-			req.Header.Add("X-Forwarded-Host", req.Host)
-			req.Header.Add("X-Origin-Host", "127.0.0.1:4433")
-		}
-
-		proxy := &httputil.ReverseProxy{Director: director}
-		proxy.ServeHTTP(c.Writer, c.Request)
-		return
-	})
-
 	r.GET("/session/sdk", func(c *gin.Context) {
 		params := public.NewWhoamiParams()
 		session, err := publicKratosClient.Public.Whoami(params)
@@ -176,10 +163,10 @@ func main() {
 	r.GET("/logout", func(c *gin.Context) {
 		director := func(req *http.Request) {
 			req.URL.Scheme = "http"
-			req.URL.Host = "127.0.0.1:4433"
+			req.URL.Host = "kratos:4433"
 			req.URL.Path = "/self-service/browser/flows/logout"
 			req.Header.Add("X-Forwarded-Host", req.Host)
-			req.Header.Add("X-Origin-Host", "127.0.0.1:4433")
+			req.Header.Add("X-Origin-Host", "kratos:4433")
 		}
 
 		proxy := &httputil.ReverseProxy{Director: director}

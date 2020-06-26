@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -15,11 +16,25 @@ import (
 )
 
 var (
-	AdminAPI      = "http://127.0.0.1:4434"
-	PublicAPI     = "http://127.0.0.1:4433"
-	ClientAPI     = "http://127.0.0.1:9080"
-	SelfPublicAPI = "/.ory/kratos/public/"
+	AdminAPI      string
+	PublicAPI     string
+	ClientAPI     string
+	SelfPublicAPI string
 )
+
+// var (
+// 	AdminAPI      = "http://127.0.0.1:4434"
+// 	PublicAPI     = "http://127.0.0.1:4433"
+// 	ClientAPI     = "http://127.0.0.1:9080"
+// 	SelfPublicAPI = "/.ory/kratos/public/"
+// )
+
+func init() {
+	AdminAPI = os.Getenv("ADMIN_API")
+	PublicAPI = os.Getenv("PUBLIC_API")
+	ClientAPI = os.Getenv("CLIENT_API")
+	SelfPublicAPI = os.Getenv("SELF_PUBLIC_API_PATH")
+}
 
 // GenerateNewUUID for generate new UUID4
 func GenerateNewUUID() interface{} {

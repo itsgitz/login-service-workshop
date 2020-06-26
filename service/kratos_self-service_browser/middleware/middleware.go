@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -23,6 +24,8 @@ func CustomMiddleware() gin.HandlerFunc {
 			proxyURL, err := url.Parse(newRequestURL)
 			utils.ErrorResponse(c, err)
 
+			log.Println("proxy url:", proxyURL)
+			log.Println("new request url:", newRequestURL)
 			director := func(req *http.Request) {
 				req.URL.Scheme = proxyURL.Scheme
 				req.URL.Host = proxyURL.Host
