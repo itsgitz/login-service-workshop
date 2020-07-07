@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,16 +12,18 @@ import (
 	"text/template"
 
 	"github.com/gin-gonic/gin"
-	"github.com/itsgitz/ory-kratos-workshop/service/kratos_self-service_browser/middleware"
-	"github.com/itsgitz/ory-kratos-workshop/service/kratos_self-service_browser/utils"
+	"github.com/itsgitz/login-service-workshop/service/kratos_self-service_browser/middleware"
+	"github.com/itsgitz/login-service-workshop/service/kratos_self-service_browser/utils"
+	hydraModels "github.com/ory/hydra-client-go/models"
 	kratos "github.com/ory/kratos-client-go/client"
 	"github.com/ory/kratos-client-go/client/common"
-	"github.com/ory/kratos-client-go/client/public"
+	"golang.org/x/oauth2"
 )
 
 var (
 	adminKratosClient  *kratos.OryKratos
 	publicKratosClient *kratos.OryKratos
+	hydraOauth2Config  *oauth2.Config
 )
 
 func init() {
@@ -63,18 +67,6 @@ func main() {
 		log.Println("ADMIN_API:", utils.AdminAPI)
 		tpl := template.Must(template.ParseFiles("views/main.html"))
 		tpl.Execute(c.Writer, nil)
-	})
-
-	r.GET("/error", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"error": "This is error message",
-		})
-	})
-
-	r.GET("/settings", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "This is setting page",
-		})
 	})
 
 	// registration endpoint, will redirect to /auth/registration
@@ -122,6 +114,79 @@ func main() {
 		tpl.Execute(c.Writer, config)
 	})
 
+	// credentials page
+	r.GET("/credentials", func(c *gin.Context) {
+		session, err := utils.GetCurrentSession(c)
+		if err != nil {
+			utils.ErrorResponse(c, err)
+		}
+
+		// get query parameter
+		createNewClient := c.Query("create")
+
+		if createNewClient == "true" {
+			hydraOauth2Client := hydraModels.OAuth2Client{
+				RedirectUris:            []string{"http://127.0.0.1:8080/callback"},
+				GrantTypes:              []string{"authorization_code", "refresh_token"},
+				ResponseTypes:           []string{"code", "id_token"},
+				Scope:                   "openid offline",
+				ClientName:              session.Identity.Traits.Username,
+				Contacts:                []string{session.Identity.Traits.Email},
+				TokenEndpointAuthMethod: "client_secret_post",
+			}
+
+			jsonData, err := json.Marshal(hydraOauth2Client)
+			if err != nil {
+				log.Println("json encoding error:", err.Error())
+				return
+			}
+
+			log.Println("json:", string(jsonData))
+
+			httpClient := http.Client{}
+			req, err := http.NewRequest("POST", "http://hydra:4445/clients", bytes.NewBuffer(jsonData))
+			if err != nil {
+				log.Println("http request error:", err.Error())
+				return
+			}
+
+			req.Header.Set("Content-Type", "application/json")
+
+			res, err := httpClient.Do(req)
+			if err != nil {
+				log.Println("http response error:", err.Error())
+				return
+			}
+
+			defer res.Body.Close()
+
+			body, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				log.Println("http body read error:", err.Error())
+				return
+			}
+
+			log.Println(string(body))
+
+			hydraResponse := &hydraModels.OAuth2Client{}
+			err = json.Unmarshal(body, hydraResponse)
+			if err != nil {
+				log.Println("json unmarshal error ->", err.Error())
+			}
+
+			log.Println("client_id", hydraResponse.ClientID)
+			log.Println("client_secret", hydraResponse.ClientSecret)
+		}
+
+		tpl := template.Must(template.ParseFiles("views/credentials.html"))
+		err = tpl.Execute(c.Writer, nil)
+		if err != nil {
+			log.Println("template error:", err.Error())
+			return
+		}
+	})
+
+	// get current session
 	r.GET("/session", func(c *gin.Context) {
 		cookies := c.Request.Cookies()
 
@@ -152,14 +217,6 @@ func main() {
 		return
 	})
 
-	r.GET("/session/sdk", func(c *gin.Context) {
-		params := public.NewWhoamiParams()
-		session, err := publicKratosClient.Public.Whoami(params)
-		utils.ErrorResponse(c, err)
-
-		log.Println("session:", session)
-	})
-
 	r.GET("/logout", func(c *gin.Context) {
 		director := func(req *http.Request) {
 			req.URL.Scheme = "http"
@@ -172,6 +229,20 @@ func main() {
 		proxy := &httputil.ReverseProxy{Director: director}
 		proxy.ServeHTTP(c.Writer, c.Request)
 		return
+	})
+
+	// Error page
+	r.GET("/error", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"error": "This is error message",
+		})
+	})
+
+	// Settings page
+	r.GET("/settings", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "This is setting page",
+		})
 	})
 
 	r.Run(":9080")
