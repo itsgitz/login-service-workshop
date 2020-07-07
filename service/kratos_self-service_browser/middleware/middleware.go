@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/itsgitz/ory-kratos-workshop/service/kratos_self-service_browser/utils"
+	"github.com/itsgitz/login-service-workshop/service/kratos_self-service_browser/utils"
 )
 
 func CustomMiddleware() gin.HandlerFunc {
