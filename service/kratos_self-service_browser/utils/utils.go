@@ -12,7 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/itsgitz/ory-kratos-workshop/service/kratos_self-service_browser/models"
+	"github.com/itsgitz/login-service-workshop/service/kratos_self-service_browser/models"
 )
 
 var (
@@ -119,68 +119,6 @@ func HTTPClientForGetSession(c *gin.Context, url string, method string, dataCook
 	return body
 }
 
-// PostRequest for making post request to server
-// func PostRequest(c *gin.Context, models models.ServiceFlowsRequest, requestValue string) {
-// 	requestURL := fmt.Sprintf("%s/self-service/browser/flows/registration/strategies/password?request=%s", PublicAPI, requestValue)
-
-// 	var err error
-// 	var client = &http.Client{}
-// 	var param = url.Values{}
-// 	csrfToken := models.Methods.Password.Config.Fields[0].Value
-
-// 	param.Set("csrf_token", csrfToken)
-// 	payload := bytes.NewBufferString(param.Encode())
-
-// 	request, err := http.NewRequest("POST", requestURL, payload)
-// 	if err != nil {
-// 		log.Println(err.Error())
-// 	}
-
-// 	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-// 	request.Header.Set("X-CSRF-TOKEN", csrfToken)
-// 	response, err := client.Do(request)
-// 	if err != nil {
-// 		log.Println(err.Error())
-// 	}
-
-// 	defer response.Body.Close()
-
-// 	body, err := ioutil.ReadAll(response.Body)
-// 	if err != nil {
-// 		log.Println(err.Error())
-// 	}
-
-// 	fmt.Fprintf(c.Writer, string(body))
-// 	// fmt.Println(models.Methods.Password.Config)
-// 	// for k, v := range models.Methods.Password.Config.Fields {
-// 	// 	fmt.Println(k, v)
-// 	// }
-
-// 	// fmt.Println("First form is:", models.Methods.Password.Config.Fields[0])
-
-// 	// requestBody, err := json.Marshal(map[string]string{
-// 	// 	models.Methods.Password.Config.Fields[0].Name: models.Methods.Password.Config.Fields[0].Value,
-// 	// })
-
-// 	// if err != nil {
-// 	// 	log.Println(err.Error())
-// 	// }
-
-// 	// resp, err := http.Post(requestURL, "application/json", bytes.NewBuffer(requestBody))
-// 	// if err != nil {
-// 	// 	log.Println(err.Error())
-// 	// }
-
-// 	// defer resp.Body.Close()
-
-// 	// body, err := ioutil.ReadAll(resp.Body)
-// 	// if err != nil {
-// 	// 	log.Println(err.Error())
-// 	// }
-
-// 	// fmt.Fprintf(c.Writer, string(body))
-// }
-
 // ParsedJSON function for parsing json data into object
 func ParsedJSON(data []byte) models.ServiceFlowsRequest {
 	var serviceFlowsRequest models.ServiceFlowsRequest
@@ -229,4 +167,46 @@ func ErrorResponse(c *gin.Context, err error) {
 
 		return
 	}
+}
+
+// GetCurrentSession for retrieve current logged in session
+func GetCurrentSession(c *gin.Context) (*models.CurrentKratosSession, error) {
+	cookies := c.Request.Cookies()
+
+	cl := http.Client{}
+	req, err := http.NewRequest("GET", "http://127.0.0.1:9080/.ory/kratos/public/sessions/whoami", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Add session cookie
+	for _, cookie := range cookies {
+		req.AddCookie(&http.Cookie{
+			Name:    cookie.Name,
+			Value:   cookie.Value,
+			Path:    cookie.Path,
+			Expires: cookie.Expires,
+		})
+	}
+
+	resp, err := cl.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	session := &models.CurrentKratosSession{}
+
+	err = json.Unmarshal(body, session)
+	if err != nil {
+		return nil, err
+	}
+
+	return session, nil
 }
