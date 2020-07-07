@@ -12,7 +12,7 @@ selfservice:
               hook: verify
   
     verify:
-      return_to: http://127.0.0.1:9080/
+      return_to: http://127.0.0.1:9080
   
     logout:
       redirect_to: http://127.0.0.1:9080
