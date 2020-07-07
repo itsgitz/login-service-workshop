@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/itsgitz/ory-kratos-workshop/service/kratos_api_login_system/utils"
+	"github.com/itsgitz/login-service-workshop/service/kratos_api_login_system/utils"
 )
 
 // ProxyRequestMiddleware is function act as middleware, forwarding all request to ORY Kratos Host
