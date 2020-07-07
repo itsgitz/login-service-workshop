@@ -10,9 +10,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
-	"github.com/itsgitz/ory-kratos-workshop/service/kratos_api_login_system/middleware"
-	"github.com/itsgitz/ory-kratos-workshop/service/kratos_api_login_system/models"
-	"github.com/itsgitz/ory-kratos-workshop/service/kratos_api_login_system/utils"
+	"github.com/itsgitz/login-service-workshop/service/kratos_api_login_system/middleware"
+	"github.com/itsgitz/login-service-workshop/service/kratos_api_login_system/models"
+	"github.com/itsgitz/login-service-workshop/service/kratos_api_login_system/utils"
 	kratos "github.com/ory/kratos-client-go/client"
 	"github.com/ory/kratos-client-go/client/common"
 	"github.com/ory/kratos-client-go/client/public"
