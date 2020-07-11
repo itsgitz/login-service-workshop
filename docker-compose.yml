@@ -50,7 +50,7 @@ services:
 
     postgresql-db:
         image: postgres:latest
-        container_name: app-kratos-db
+        container_name: app-auth-db
         environment: 
             - POSTGRES_USER=${DB_USER}
             - POSTGRES_PASSWORD=${DB_PASSWORD}
